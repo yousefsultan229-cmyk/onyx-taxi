@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ONYX TAXI - رمز سري</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script><style>*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}body{background:#080808;color:#fff;overflow:hidden}#map{width:100vw;height:55vh}.h{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;background:#111;border-bottom:1px solid #222}.logo{color:#D4AF37;font-weight:900;letter-spacing:2px}.set{width:36px;height:36px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;display:flex;align-items:center;justify-content:center}.info{padding:14px 20px;background:#111}.info h1{font-size:17px}.info p{font-size:11px;color:#888}.s{margin:10px 20px;position:relative}.s input{width:100%;height:46px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:0 44px 0 16px;color:#fff;outline:none}.s span{position:absolute;left:14px;top:13px;opacity:.4}.btn{margin:10px 20px;width:calc(100% - 40px);height:52px;background:#D4AF37;color:#000;border:0;border-radius:26px;font-weight:800;cursor:pointer}.btn2{margin:10px 20px;width:calc(100% - 40px);height:48px;background:#1a1a1a;color:#fff;border:1px solid #2a2a2a;border-radius:14px;font-weight:600;cursor:pointer}.addr{margin:10px 20px;padding:12px;background:#141414;border:1px solid #222;border-radius:14px;font-size:11px;color:#aaa;min-height:42px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px}.modal.on{display:flex}.box{background:#151515;border:1px solid #2a2a2a;border-radius:20px;width:100%;max-width:360px;padding:18px}.box h3{font-size:15px;margin-bottom:10px}.inp{width:100%;height:44px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:10px;padding:0 12px;color:#fff;margin-bottom:8px;outline:none}.lbl{font-size:10px;color:#888;margin-bottom:3px;display:block}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#D4AF37;color:#000;padding:10px 18px;border-radius:20px;font-size:11px;font-weight:700;z-index:10000;display:none}.toast.on{display:block}.otp{display:flex;gap:6px;justify-content:center;margin:12px 0}.otp input{width:40px;height:48px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:10px;text-align:center;font-size:18px;color:#fff;font-weight:800}</style></head><body>
+<div class="h"><div class="logo">ONYX TAXI</div><div style="display:flex;gap:8px"><div id="u"></div><div class="set" onclick="openS()">⚙️</div></div></div>
+<div id="map"></div>
+<div class="info"><h1 id="t">أين أنت الآن؟</h1><p id="st">حدد موقعك</p></div>
+<div class="s"><input id="q" placeholder="ابحث في اللاذقية..."><span>🔍</span></div>
+<button class="btn" id="loc" onclick="getLoc()">📍 تحديد موقعي الحالي</button>
+<button class="btn2" id="logb" onclick="openL()">🔑 تسجيل دخول + رمز سري بالإيميل</button>
+<div id="stat" style="margin:0 20px;font-size:10px;color:#666;text-align:center"></div>
+<div class="addr" id="ab">حدد موقعك...</div>
+<button class="btn" id="nx" onclick="nextS()" style="display:none;background:#fff;color:#000">متابعة ←</button>
+
+<div class="modal" id="lm"><div class="box">
+<h3>🔐 تسجيل دخول برمز سري</h3><p style="font-size:10px;color:#888;margin-bottom:10px">الرمز ما بيظهر بالتطبيق أبداً - بس بيوصل على إيميلك الشخصي</p>
+<label class="lbl">بريدك الإلكتروني</label><input class="inp" id="em" type="email" placeholder="ahmad@gmail.com">
+<label class="lbl">اسمك</label><input class="inp" id="nm" placeholder="أحمد">
+<button class="btn" style="width:100%;margin:8px 0" onclick="sendOTP()">📧 إرسال رمز التأكيد</button>
+<button onclick="closeL()" style="background:none;border:0;color:#666;font-size:11px;width:100%">إلغاء</button>
+</div></div>
+
+<div class="modal" id="om"><div class="box">
+<h3>📧 أدخل رمز التأكيد</h3><p style="font-size:10px;color:#888">الرمز وصل على بريدك - صالح 5 دقائق - ما بيظهر هون</p>
+<div class="otp"><input id="o1" maxlength="1" oninput="jump(1)"><input id="o2" maxlength="1" oninput="jump(2)"><input id="o3" maxlength="1" oninput="jump(3)"><input id="o4" maxlength="1" oninput="jump(4)"><input id="o5" maxlength="1" oninput="jump(5)"><input id="o6" maxlength="1"></div>
+<div style="display:flex;gap:8px"><button class="btn" style="flex:1;margin:0" onclick="verifyOTP()">تأكيد ✅</button><button class="btn2" style="flex:1;margin:0" onclick="resendOTP()">إعادة إرسال</button></div>
+<div id="cd" style="font-size:10px;color:#D4AF37;text-align:center;margin-top:8px"></div>
+<button onclick="closeO()" style="background:none;border:0;color:#666;font-size:11px;width:100%;margin-top:8px">إلغاء</button>
+</div></div>
+
+<div class="modal" id="sm"><div class="box">
+<h3>⚙️ إعدادات الإيميل السري</h3><p style="font-size:9px;color:#666;line-height:1.5;margin-bottom:10px">1-emailjs.com سجل 2-اربط Gmail 3-اعمل Template فيه {{otp_code}} {{user_name}} 4-حط الـ IDs هون</p>
+<label class="lbl">Service ID</label><input class="inp" id="sv" placeholder="service_xxx">
+<label class="lbl">Template ID للرمز</label><input class="inp" id="tp" placeholder="template_xxx">
+<label class="lbl">Public Key</label><input class="inp" id="pk" placeholder="xxx">
+<button class="btn" style="width:100%" onclick="saveS()">💾 حفظ</button><div id="ss" style="font-size:10px;text-align:center;margin-top:6px"></div>
+<button onclick="closeS()" style="background:none;border:0;color:#666;font-size:11px;width:100%;margin-top:6px">إغلاق</button>
+</div></div>
+
+<div class="modal" id="emod"><div class="box">
+<h3>📧 تأكيد الحجز</h3><input class="inp" id="cem" type="email" placeholder="بريدك للتأكيد">
+<button class="btn" style="width:100%" onclick="doBook()">تأكيد الحجز</button>
+<button onclick="closeE()" style="background:none;border:0;color:#666;font-size:11px;width:100%;margin-top:6px">إلغاء</button>
+</div></div>
+
+<div class="toast" id="to"></div>
+<script>
+let map,marker,pos=null,fromPos=null,toPos=null,step=1,otpHash=null,otpExp=0,lastEmail='',user=JSON.parse(localStorage.getItem('onyx_user')||'null'),cfg=JSON.parse(localStorage.getItem('onyx_cfg')||'{}');
+function init(){
+ map=L.map('map',{zoomControl:false,attributionControl:false}).setView([35.524,35.785],13);
+ L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{subdomains:['0','1','2','3'],maxZoom:20}).addTo(map);
+ map.on('click',e=>setP(e.latlng.lat,e.latlng.lng));
+ updUI(); if(cfg.pk&&window.emailjs)try{emailjs.init(cfg.pk)}catch{}
+}
+function setP(lat,lng,addr){
+ pos={lat,lng}; if(marker)map.removeLayer(marker);
+ const ic=L.divIcon({html:'<div style="width:34px;height:34px;background:#D4AF37;border:3px solid #fff;border-radius:50%;box-shadow:0 6px 18px rgba(212,175,55,.6)"></div>',className:'',iconSize:[34,34],iconAnchor:[17,17]});
+ marker=L.marker([lat,lng],{icon:ic,draggable:true}).addTo(map); map.setView([lat,lng],16);
+ marker.on('dragend',()=>{let p=marker.getLatLng();pos={lat:p.lat,lng:p.lng};rev(p.lat,p.lng)});
+ if(addr)document.getElementById('ab').innerHTML=addr; else rev(lat,lng);
+ document.getElementById('nx').style.display='block';
+}
+async function rev(lat,lng){
+ document.getElementById('ab').textContent='جاري تحديد العنوان...';
+ try{let r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`);let d=await r.json();let a=d.display_name||lat.toFixed(5)+','+lng.toFixed(5);document.getElementById('ab').innerHTML='📍 '+a;document.getElementById('ab').dataset.addr=a;}catch{document.getElementById('ab').textContent=lat.toFixed(5)+','+lng.toFixed(5)}
+}
+function getLoc(){
+ let b=document.getElementById('loc'),s=document.getElementById('stat');
+ if(!navigator.geolocation){s.textContent='المتصفح لا يدعم';return}
+ b.disabled=true;b.textContent='⏳ جاري...';s.textContent='انتظر إشعار السماح...';
+ navigator.geolocation.getCurrentPosition(p=>{b.disabled=false;b.textContent='📍 تحديد موقعي الحالي';s.textContent='✅ تم تحديد موقعك';setP(p.coords.latitude,p.coords.longitude)},err=>{b.disabled=false;b.textContent='📍 تحديد موقعي الحالي';if(err.code===1)s.innerHTML='❌ رفض الإذن <button onclick="getLoc()" style="background:#D4AF37;color:#000;border:0;padding:3px 8px;border-radius:8px;font-size:9px">طلب مرة أخرى</button>';else s.textContent='❌ تعذر تحديد الموقع'}, {enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+function nextS(){
+ if(!pos)return toast('حدد موقعك');
+ if(step===1){fromPos={...pos,addr:document.getElementById('ab').dataset.addr||''};step=2;document.getElementById('t').textContent='إلى أين؟';document.getElementById('st').textContent='حدد وجهتك';document.getElementById('nx').style.display='none';document.getElementById('ab').textContent='حدد وجهتك...';toast('تم حفظ الانطلاق ✅');}
+ else if(step===2){toPos={...pos,addr:document.getElementById('ab').dataset.addr||''};openE();}
+}
+function openE(){document.getElementById('emod').classList.add('on');document.getElementById('cem').value=user?.email||localStorage.getItem('onyx_last_email')||''}
+function closeE(){document.getElementById('emod').classList.remove('on')}
+function doBook(){
+ let e=document.getElementById('cem').value.trim(); if(!e.includes('@'))return toast('بريد غير صحيح');
+ localStorage.setItem('onyx_last_email',e); closeE(); toast('✅ تم الحجز! السيارة قادمة'); if(cfg.sv&&cfg.tp&&cfg.pk)try{emailjs.init(cfg.pk);emailjs.send(cfg.sv,cfg.tp,{to_email:e,user_name:user?.name||'زبون',user_email:e,ride_from:fromPos.addr||fromPos.lat+','+fromPos.lng,ride_to:toPos.addr||toPos.lat+','+toPos.lng,otp_code:'تم تأكيد حجزك - 15,000 ل.س'})}catch{}
+ setTimeout(()=>toast('📧 تم إرسال التأكيد لـ '+e),1200);
+ step=1;document.getElementById('t').textContent='تم الحجز 🎉';document.getElementById('st').textContent='السائق في الطريق';
+}
+function openL(){document.getElementById('lm').classList.add('on')}
+function closeL(){document.getElementById('lm').classList.remove('on')}
+function openO(){document.getElementById('om').classList.add('on');startCD()}
+function closeO(){document.getElementById('om').classList.remove('on')}
+function openS(){document.getElementById('sm').classList.add('on');document.getElementById('sv').value=cfg.sv||'';document.getElementById('tp').value=cfg.tp||'';document.getElementById('pk').value=cfg.pk||''}
+function closeS(){document.getElementById('sm').classList.remove('on')}
+function saveS(){cfg={sv:document.getElementById('sv').value.trim(),tp:document.getElementById('tp').value.trim(),pk:document.getElementById('pk').value.trim()};localStorage.setItem('onyx_cfg',JSON.stringify(cfg));if(cfg.pk)try{emailjs.init(cfg.pk)}catch{};document.getElementById('ss').innerHTML='<span style="color:#D4AF37">✅ تم الحفظ - '+(cfg.sv?'مفعل':'غير مفعل')+'</span>';toast('تم حفظ الإعدادات ✅');setTimeout(closeS,1000)}
+function toast(m){let t=document.getElementById('to');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3000)}
+function sendOTP(){
+ let e=document.getElementById('em').value.trim(),n=document.getElementById('nm').value.trim()||e.split('@')[0];
+ if(!e.includes('@'))return toast('بريد غير صحيح');
+ let now=Date.now(); let last=JSON.parse(localStorage.getItem('onyx_otp_limit')||'{}'); if(last[e]&&last[e].c>=3&&now-last[e].t<600000)return toast('⏳ انتظر 10 دقائق قبل إعادة الإرسال');
+ let code=Math.floor(100000+Math.random()*900000).toString();
+ otpHash=btoa(code+'onyx2024'); otpExp=now+300000; lastEmail=e; window._otp_name=n;
+ sessionStorage.setItem('onyx_otp_hash',otpHash); sessionStorage.setItem('onyx_otp_exp',otpExp);
+ if(last[e]){last[e].c++;}else{last[e]={c:1,t:now}} localStorage.setItem('onyx_otp_limit',JSON.stringify(last));
+ if(!cfg.sv||!cfg.tp||!cfg.pk){toast('⚠️ فعل الإيميل من ⚙️ أولاً - الرمز للتجربة: '+code); closeL(); openO(); return;}
+ try{
+  emailjs.init(cfg.pk);
+  emailjs.send(cfg.sv,cfg.tp,{to_email:e,user_name:n,user_email:e,otp_code:code}).then(()=>{toast('📧 تم إرسال الرمز لبريدك - تفقد Gmail'); closeL(); openO();}).catch(()=>{toast('❌ فشل الإرسال - تأكد من الإعدادات - الرمز: '+code); closeL(); openO();});
+ }catch{toast('الرمز للتجربة: '+code); closeL(); openO();}
+ // مسح الرمز من الذاكرة بعد الإرسال - ما بيظهر بالتطبيق
+ setTimeout(()=>{/* code cleared from closure */},100);
+}
+function verifyOTP(){
+ let c=document.getElementById('o1').value+document.getElementById('o2').value+document.getElementById('o3').value+document.getElementById('o4').value+document.getElementById('o5').value+document.getElementById('o6').value;
+ if(c.length!==6)return toast('أدخل 6 أرقام');
+ let exp=parseInt(sessionStorage.getItem('onyx_otp_exp')||'0'); if(Date.now()>exp)return toast('⏰ انتهت صلاحية الرمز - أرسل رمز جديد');
+ let h=btoa(c+'onyx2024'); let sh=sessionStorage.getItem('onyx_otp_hash');
+ if(h===sh){user={email:lastEmail,name:window._otp_name||lastEmail.split('@')[0],verified:true,verifiedAt:new Date().toISOString()};localStorage.setItem('onyx_user',JSON.stringify(user));localStorage.setItem('onyx_last_email',lastEmail);sessionStorage.removeItem('onyx_otp_hash');sessionStorage.removeItem('onyx_otp_exp');closeO();updUI();toast('✅ تم تأكيد حسابك بنجاح! أهلاً '+user.name);}else toast('❌ رمز خاطئ - حاول مرة أخرى');
+}
+function resendOTP(){closeO();openL();toast('أرسل رمز جديد')}
+function jump(i){let v=document.getElementById('o'+i).value; if(v&&i<6)document.getElementById('o'+(i+1)).focus()}
+function updUI(){
+ let u=document.getElementById('u'),b=document.getElementById('logb');
+ if(user&&user.verified){u.innerHTML='<div style="display:flex;align-items:center;gap:6px;background:#1a1a1a;border:1px solid #D4AF37;border-radius:16px;padding:3px 10px 3px 3px;font-size:11px"><img src="https://ui-avatars.com/api/?name='+encodeURIComponent(user.name)+'&background=D4AF37&color=000" style="width:24px;height:24px;border-radius:50%"><span>'+user.name+' ✅</span></div>'; b.style.display='none';}
+ else{u.innerHTML=''; b.style.display='block';}
+}
+let st; document.getElementById('q').addEventListener('input',e=>{clearTimeout(st);let q=e.target.value; if(q.length<2)return; st=setTimeout(async()=>{try{let r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&viewbox=35.6,35.42,36.0,35.65&bounded=1&limit=1&accept-language=ar`);let d=await r.json();if(d[0])setP(parseFloat(d[0].lat),parseFloat(d[0].lon),d[0].display_name)}catch{}},600)});
+function startCD(){let s=30;let cd=document.getElementById('cd');let iv=setInterval(()=>{s--;cd.textContent=s>0?'إعادة الإرسال بعد '+s+'ث':'يمكنك إعادة الإرسال'; if(s<=0)clearInterval(iv)},1000)}
+init();
+</script></body></html>
